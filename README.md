@@ -30,3 +30,5 @@
     - Grava no arquivo `cotacao.txt` no formato:
 
 > Todos os requisitos estão definidos em [Requisitos do desafio](./docs/requisitos.md)
+
+> Algumas práticas foram inspiradas no repo [gopportunities](https://github.com/arthur404dev/gopportunities) do Arthur.
