@@ -17,6 +17,7 @@ var (
 const (
 	COTACAO_API_URL     = "https://economia.awesomeapi.com.br/json/last/"
 	COTACAO_API_TIMEOUT = 200 * time.Millisecond
+	COTACAO_DB_TIMEOUT  = 10 * time.Millisecond
 	SERVER_PORT         = "8080"
 	MOEDAS              = "USD-BRL"
 )

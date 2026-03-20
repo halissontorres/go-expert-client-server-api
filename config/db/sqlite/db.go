@@ -11,14 +11,14 @@ import (
 
 func InitializeSQLite() (*gorm.DB, error) {
 	logger := log.NewLogger("sqlite")
-	dbPath := "../db/cotacao.db"
+	dbPath := "./db/cotacao.db"
 
 	_, err := os.Stat(dbPath)
 
 	if os.IsNotExist(err) {
 		logger.Info("Database não encontrada. Criando banco de dados.")
 
-		err = os.MkdirAll("../db", os.ModePerm)
+		err = os.MkdirAll("./db", os.ModePerm)
 		if err != nil {
 			return nil, err
 		}
@@ -35,7 +35,7 @@ func InitializeSQLite() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = db.AutoMigrate(&model.Cotacao{})
+	err = db.AutoMigrate(&model.UsdBrl{})
 	if err != nil {
 		logger.Error("sqlite erro em automigrate: %v", err)
 		return nil, err

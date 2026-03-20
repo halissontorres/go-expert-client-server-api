@@ -3,7 +3,9 @@ package model
 type Cotacao struct {
 	Usdbrl UsdBrl `json:"USDBRL,omitempty"`
 }
+
 type UsdBrl struct {
+	ID         uint   `json:"-" gorm:"primaryKey;autoIncrement"`
 	Code       string `json:"code,omitempty"`
 	Codein     string `json:"codein,omitempty"`
 	Name       string `json:"name,omitempty"`

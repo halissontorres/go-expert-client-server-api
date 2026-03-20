@@ -29,6 +29,46 @@
     - Extrai apenas o valor **bid** (preço de compra)
     - Grava no arquivo `cotacao.txt` no formato:
 
+---
+
+### Como executar
+
+#### Pré-requisitos
+
+- [Go 1.25+](https://golang.org/dl/)
+
+#### Opção 1 — `go run`
+
+```bash
+# Terminal 1 — servidor
+go run server.go
+
+# Terminal 2 — cliente
+go run client.go
+```
+
+#### Opção 2 — `go build`
+
+```bash
+# Build
+go build -tags server -o bin/server .
+go build -tags client -o bin/client .
+
+# Terminal 1 — servidor
+./bin/server
+
+# Terminal 2 — cliente
+./bin/client
+```
+
+Após executar o cliente, o resultado é salvo em `cotacao.txt`:
+
+```
+Dólar: 5.2791
+```
+
+---
+
 > Todos os requisitos estão definidos em [Requisitos do desafio](./docs/requisitos.md)
 
 > Algumas práticas foram inspiradas no repo [gopportunities](https://github.com/arthur404dev/gopportunities) do Arthur.

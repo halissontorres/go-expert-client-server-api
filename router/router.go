@@ -11,6 +11,10 @@ import (
 func init() {
 	logger := config.GetLogger("router")
 
+	if err := config.Init(); err != nil {
+		logger.Fatal("Erro ao inicializar configurações: %v", err)
+	}
+
 	porta := os.Getenv("COTACAO_SERVER_PORT")
 	if porta == "" {
 		porta = config.SERVER_PORT

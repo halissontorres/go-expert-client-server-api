@@ -14,28 +14,34 @@ import (
 
 func Cotacao(w http.ResponseWriter, r *http.Request) {
 	logger := config.GetLogger("handler.Cotacao")
+
 	timeOut, err := time.ParseDuration(os.Getenv("COTACAO_API_TIMEOUT"))
 	if err != nil {
 		timeOut = config.COTACAO_API_TIMEOUT
 	}
 
 	ctx, cancel := context.WithTimeout(r.Context(), timeOut)
-	ctx, cancel = context.WithTimeout(ctx, timeOut)
 	defer cancel()
 
 	url := config.COTACAO_API_URL + config.MOEDAS
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		logger.Error("Erro ao criar requisição: %v", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error":"Erro interno"}`))
+		return
+	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-
 	if err != nil {
+		logger.Error("Timeout ou erro ao buscar cotação: %v", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusRequestTimeout)
 		w.Write([]byte(`{"error":"Tempo de resposta excedido"}`))
 		return
 	}
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
@@ -47,13 +53,19 @@ func Cotacao(w http.ResponseWriter, r *http.Request) {
 		logger.Error("Erro ao ler resposta: %v", err)
 	}
 
-	defer resp.Body.Close()
-
 	var cotacao model.Cotacao
-	err = json.Unmarshal(body, &cotacao)
-	if err != nil {
+	if err = json.Unmarshal(body, &cotacao); err != nil {
 		logger.Error("Erro ao desserializar resposta: %v", err)
 	}
+
+	ctxDB, cancelDB := context.WithTimeout(context.Background(), config.COTACAO_DB_TIMEOUT)
+	defer cancelDB()
+
+	db := config.GetSQLite().WithContext(ctxDB)
+	if err := db.Create(&cotacao.Usdbrl).Error; err != nil {
+		logger.Error("Timeout ou erro ao persistir cotação: %v", err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(cotacao)
